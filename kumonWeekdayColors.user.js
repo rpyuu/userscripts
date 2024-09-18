@@ -29,15 +29,9 @@
       D.style.setProperty('--wd-day', WDDAY[wd])
       D.style.setProperty('--wd-col', WDCOLORS[wd])
       D.style.setProperty('--wd-fg', WDFG[wd])
-      // D.style.backgroundColor = WDCOLORS[wd];
-      //D.querySelector('.score-date-day').style.backgroundColor = WDCOLORS[wd];
-      // D.querySelector('.score-date-day').style.color = 'black';
     })
   });
 
   // Start observing the target node for configured mutations
   observer.observe(document.querySelector('app-root'), { childList: true, subtree: true });
-
-  // Later, you can stop observing
-  // observer.disconnect();
 })();
