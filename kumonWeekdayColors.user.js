@@ -7,7 +7,14 @@
 
 (() => {
   //แสดงวัน ในหน้า Study Record/Set
-  const WDCOLORS = ['rgb(255 0 0 / 50%)', 'yellow', 'rgb(255 20 147 / 50%)', 'greenyellow', 'orange', '#00bfff', 'rgb(135 30 135 / 50%)']
+  const WDCOLORS = ['red', 'gold', 'hotpink', '#41c3b1', '#ff6d00', '#00bfff', '#662d91']
+  const WDFG = ['white', 'black', 'white', 'black', 'white', 'black', 'white']
+  const WDDAY = ["'อา'", "'จ'", "'อ'", "'พ'", "'พฤ'", "'ศ'", "'ส'"]
+
+  const sty = document.createElement('style')
+  sty.textContent = '.score-date.weekday:before { content: var(--wd-day); background-color: var(--wd-col); margin-right: 0.1rem; color: var(--wd-fg); width: 0.8rem; height: 0.8rem; aspect-ratio: 1/1; display: inline-flex !important; align-items: center; justify-content: center; font-weight: 400; font-size: 0.6rem; border:1px solid black; }\n';
+  document.head.appendChild(sty);
+
   // Create an observer instance linked to the callback function
   const observer = new MutationObserver((mutationList, observer) => {
     if(document.querySelector('.page-title')?.textContent != 'Set') return;
@@ -18,9 +25,13 @@
       const ds = D.querySelector('.score-date-day').textContent + ' ' + m + ' ' + y + ' 11:11:11';
       const dd = new Date(ds);
       const wd = dd.getDay();
-      D.style.backgroundColor = WDCOLORS[wd];
+      D.classList.add('weekday')
+      D.style.setProperty('--wd-day', WDDAY[wd])
+      D.style.setProperty('--wd-col', WDCOLORS[wd])
+      D.style.setProperty('--wd-fg', WDFG[wd])
+      // D.style.backgroundColor = WDCOLORS[wd];
       //D.querySelector('.score-date-day').style.backgroundColor = WDCOLORS[wd];
-      D.querySelector('.score-date-day').style.color = 'black';
+      // D.querySelector('.score-date-day').style.color = 'black';
     })
   });
 
