@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="th">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <title>KC Stylus Compatibility Tester</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            :root {
+                --bg-main: #f8fafc;
+                --bg-card: rgba(255, 255, 255, 0.85);
+                --bg-card-hover: rgba(255, 255, 255, 0.95);
+                --border-card: #e2e8f0;
+                --border-focus: rgba(99, 102, 241, 0.5);
+
+                --text-primary: #0f172a;
+                --text-secondary: #475569;
+                --text-muted: #94a3b8;
+
+                --color-primary: #4f46e5;
+                --color-primary-hover: #4338ca;
+                --color-primary-glow: rgba(79, 70, 229, 0.15);
+
+                --color-success: #059669;
+                --color-success-bg: #ecfdf5;
+                --color-success-border: #a7f3d0;
+                --color-success-glow: rgba(5, 150, 105, 0.1);
+
+                --color-warning: #d97706;
+                --color-warning-bg: #fffbeb;
+                --color-warning-border: #fde68a;
+                --color-warning-glow: rgba(217, 119, 6, 0.1);
+
+                --color-neutral: #64748b;
+                --color-neutral-bg: #f1f5f9;
+                --color-neutral-border: #cbd5e1;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            body {
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+                background-color: var(--bg-main);
+                color: var(--text-primary);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow-x: hidden;
+            }
+
+            /* Background decorative glows */
+            .glow-bg {
+                position: absolute;
+                width: 400px;
+                height: 400px;
+                border-radius: 50%;
+                background: radial-gradient(
+                    circle,
+                    rgba(79, 70, 229, 0.05) 0%,
+                    transparent 70%
+                );
+                top: -100px;
+                right: -100px;
+                z-index: -1;
+                pointer-events: none;
+            }
+
+            .glow-bg-2 {
+                position: absolute;
+                width: 500px;
+                height: 500px;
+                border-radius: 50%;
+                background: radial-gradient(
+                    circle,
+                    rgba(6, 182, 212, 0.03) 0%,
+                    transparent 70%
+                );
+                bottom: -150px;
+                left: -150px;
+                z-index: -1;
+                pointer-events: none;
+            }
+
+            header {
+                padding: 1.25rem 2rem;
+                border-bottom: 1px solid var(--border-card);
+                backdrop-filter: blur(10px);
+                z-index: 10;
+                background-color: rgba(255, 255, 255, 0.8);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            h1 {
+                font-family: "Outfit", sans-serif;
+                font-size: 1.4rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                background: linear-gradient(135deg, #1e293b 30%, #4f46e5 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            h1 span.logo-icon {
+                background: linear-gradient(
+                    135deg,
+                    var(--color-primary) 0%,
+                    #06b6d4 100%
+                );
+                -webkit-background-clip: initial;
+                -webkit-text-fill-color: initial;
+                color: white;
+                padding: 0.2rem 0.55rem;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 800;
+            }
+
+            .header-badge {
+                background: rgba(79, 70, 229, 0.08);
+                border: 1px solid rgba(79, 70, 229, 0.15);
+                color: var(--color-primary);
+                padding: 0.35rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+
+            main {
+                flex: 1;
+                display: grid;
+                grid-template-columns: 420px 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+                max-width: 1600px;
+                margin: 0 auto;
+                width: 100%;
+                height: calc(100vh - 70px);
+            }
+
+            @media (max-width: 1024px) {
+                main {
+                    grid-template-columns: 1fr;
+                    height: auto;
+                    overflow-y: auto;
+                }
+            }
+
+            .panel-left {
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+                overflow-y: auto;
+                padding-right: 0.25rem;
+            }
+
+            /* Custom Scrollbar for left panel */
+            .panel-left::-webkit-scrollbar {
+                width: 6px;
+            }
+            .panel-left::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .panel-left::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.1);
+                border-radius: 3px;
+            }
+            .panel-left::-webkit-scrollbar-thumb:hover {
+                background: rgba(0, 0, 0, 0.2);
+            }
+
+            .card {
+                background-color: var(--bg-card);
+                border: 1px solid var(--border-card);
+                border-radius: 16px;
+                padding: 1.25rem;
+                backdrop-filter: blur(16px);
+                box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+                transition:
+                    border-color 0.2s ease,
+                    box-shadow 0.2s ease,
+                    background-color 0.2s ease;
+            }
+
+            .card:hover {
+                background-color: var(--bg-card-hover);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            }
+
+            .card-title {
+                font-family: "Outfit", sans-serif;
+                font-size: 1.05rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: var(--text-primary);
+            }
+
+            /* Verdict Card Styles */
+            .verdict-card {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .verdict-status {
+                display: flex;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .verdict-icon {
+                font-size: 2.2rem;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 12px;
+                flex-shrink: 0;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .verdict-info {
+                flex: 1;
+            }
+
+            .verdict-badge {
+                display: inline-block;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                padding: 0.2rem 0.5rem;
+                border-radius: 4px;
+                margin-bottom: 0.4rem;
+            }
+
+            .verdict-name {
+                font-family: "Outfit", sans-serif;
+                font-size: 1.2rem;
+                font-weight: 700;
+                line-height: 1.3;
+                margin-bottom: 0.5rem;
+            }
+
+            .verdict-desc {
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                line-height: 1.5;
+            }
+
+            /* Neutral State */
+            .verdict-card.state-neutral {
+                border-color: var(--color-neutral-border);
+                background: var(--color-neutral-bg);
+            }
+            .verdict-card.state-neutral .verdict-icon {
+                background: #ffffff;
+                border: 1px solid var(--border-card);
+            }
+            .verdict-card.state-neutral .verdict-badge {
+                background: rgba(0, 0, 0, 0.08);
+                color: var(--text-secondary);
+            }
+            .verdict-card.state-neutral .verdict-name {
+                color: var(--text-primary);
+            }
+
+            /* Success State */
+            .verdict-card.state-success {
+                border-color: var(--color-success-border);
+                background: var(--color-success-bg);
+                box-shadow: 0 4px 15px var(--color-success-glow);
+            }
+            .verdict-card.state-success .verdict-icon {
+                background: #ffffff;
+                border: 1px solid var(--color-success-border);
+                color: var(--color-success);
+            }
+            .verdict-card.state-success .verdict-badge {
+                background: var(--color-success);
+                color: white;
+            }
+            .verdict-card.state-success .verdict-name {
+                color: #047857;
+            }
+
+            /* Warning State */
+            .verdict-card.state-warning {
+                border-color: var(--color-warning-border);
+                background: var(--color-warning-bg);
+                box-shadow: 0 4px 15px var(--color-warning-glow);
+            }
+            .verdict-card.state-warning .verdict-icon {
+                background: #ffffff;
+                border: 1px solid var(--color-warning-border);
+                color: var(--color-warning);
+            }
+            .verdict-card.state-warning .verdict-badge {
+                background: var(--color-warning);
+                color: white;
+            }
+            .verdict-card.state-warning .verdict-name {
+                color: #b45309;
+            }
+
+            /* Diagnostics grid */
+            .diag-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .diag-item {
+                background: #f1f5f9;
+                border: 1px solid rgba(0, 0, 0, 0.03);
+                padding: 0.75rem;
+                border-radius: 10px;
+            }
+
+            .diag-label {
+                font-size: 0.75rem;
+                color: var(--text-secondary);
+                margin-bottom: 0.25rem;
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+            }
+
+            .diag-value {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+
+            .diag-value.highlight {
+                color: var(--color-primary);
+            }
+
+            /* Gauge & Visualization styles */
+            .progress-bar-container {
+                width: 100%;
+                height: 8px;
+                background: #e2e8f0;
+                border-radius: 4px;
+                margin-top: 0.5rem;
+                overflow: hidden;
+            }
+
+            .progress-bar-fill {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(
+                    90deg,
+                    var(--color-primary) 0%,
+                    #06b6d4 100%
+                );
+                border-radius: 4px;
+                transition: width 0.05s linear;
+            }
+
+            /* Tilt Visualizer Canvas */
+            .visualizer-container {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .tilt-canvas-wrapper {
+                background: #ffffff;
+                border: 1px solid var(--border-card);
+                border-radius: 12px;
+                padding: 0.5rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            }
+
+            .btn {
+                padding: 0.65rem 1rem;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.4rem;
+                transition: all 0.2s ease;
+                font-family: inherit;
+            }
+
+            .btn-secondary {
+                background: #ffffff;
+                border: 1px solid var(--border-card);
+                color: var(--text-primary);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            }
+
+            .btn-secondary:hover {
+                background: #f8fafc;
+                border-color: #cbd5e1;
+            }
+
+            /* Panel Right - Canvas Container */
+            .panel-right {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                height: 100%;
+            }
+
+            @media (max-width: 1024px) {
+                .panel-right {
+                    height: 600px;
+                }
+            }
+
+            .canvas-container {
+                flex: 1;
+                background-color: #ffffff;
+                /* Grid paper styling in light mode */
+                background-image:
+                    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                    linear-gradient(
+                        90deg,
+                        rgba(0, 0, 0, 0.03) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 1px),
+                    linear-gradient(
+                        90deg,
+                        rgba(0, 0, 0, 0.015) 1px,
+                        transparent 1px
+                    );
+                background-size:
+                    100px 100px,
+                    100px 100px,
+                    20px 20px,
+                    20px 20px;
+                background-position:
+                    -1px -1px,
+                    -1px -1px,
+                    -1px -1px,
+                    -1px -1px;
+
+                border: 1px solid var(--border-card);
+                border-radius: 20px;
+                position: relative;
+                overflow: hidden;
+                box-shadow:
+                    inset 0 2px 8px rgba(0, 0, 0, 0.04),
+                    0 10px 30px -15px rgba(0, 0, 0, 0.05);
+            }
+
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                touch-action: none; /* Crucial: prevent scroll on touch */
+                cursor: crosshair;
+            }
+
+            /* Floating canvas overlay for live cursor diagnostics */
+            .canvas-overlay {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(8px);
+                border: 1px solid var(--border-card);
+                padding: 0.5rem 0.85rem;
+                border-radius: 8px;
+                pointer-events: none;
+                font-size: 0.75rem;
+                color: var(--text-secondary);
+                font-family: "JetBrains Mono", monospace;
+                z-index: 5;
+                display: flex;
+                gap: 1rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            }
+
+            .canvas-overlay span {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+            }
+
+            .canvas-overlay span strong {
+                color: var(--text-primary);
+            }
+
+            /* Canvas controls toolbar */
+            .toolbar {
+                background: rgba(255, 255, 255, 0.85);
+                border: 1px solid var(--border-card);
+                backdrop-filter: blur(10px);
+                padding: 0.75rem 1.25rem;
+                border-radius: 14px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            }
+
+            .tool-section {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .tool-label {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .color-picker {
+                display: flex;
+                gap: 0.4rem;
+            }
+
+            .color-btn {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                cursor: pointer;
+                transition:
+                    transform 0.2s ease,
+                    border-color 0.2s ease;
+                position: relative;
+            }
+
+            .color-btn:hover {
+                transform: scale(1.15);
+            }
+
+            .color-btn.active {
+                border-color: #0f172a;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+                transform: scale(1.1);
+            }
+
+            /* Slider styling */
+            .slider-container {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .brush-slider {
+                -webkit-appearance: none;
+                width: 100px;
+                height: 6px;
+                background: #e2e8f0;
+                border-radius: 3px;
+                outline: none;
+            }
+
+            .brush-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: var(--color-primary);
+                cursor: pointer;
+                transition: background 0.15s ease;
+            }
+
+            .brush-slider::-webkit-slider-thumb:hover {
+                background: var(--color-primary-hover);
+            }
+
+            .size-val {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 0.85rem;
+                min-width: 24px;
+            }
+
+            /* Mode toggles (Draw vs Eraser) */
+            .mode-toggles {
+                display: flex;
+                background: #f1f5f9;
+                padding: 0.2rem;
+                border-radius: 8px;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .mode-btn {
+                padding: 0.4rem 0.8rem;
+                border-radius: 6px;
+                border: none;
+                background: transparent;
+                color: var(--text-secondary);
+                font-size: 0.8rem;
+                font-weight: 500;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                transition: all 0.2s ease;
+            }
+
+            .mode-btn.active {
+                background: #ffffff;
+                color: var(--text-primary);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .mode-btn:hover:not(.active) {
+                color: var(--text-primary);
+            }
+
+            /* Info card */
+            .instructions-card {
+                font-size: 0.85rem;
+                line-height: 1.6;
+            }
+
+            .instructions-card ul {
+                margin-left: 1.25rem;
+                margin-top: 0.5rem;
+                color: var(--text-secondary);
+                display: flex;
+                flex-direction: column;
+                gap: 0.4rem;
+            }
+
+            .instructions-card li strong {
+                color: var(--text-primary);
+            }
+
+            /* Device API check indicator */
+            .status-dot {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: var(--color-success);
+                box-shadow: 0 0 6px var(--color-success);
+            }
+
+            .status-dot.red {
+                background-color: #ef4444;
+                box-shadow: 0 0 6px #ef4444;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="glow-bg"></div>
+        <div class="glow-bg-2"></div>
+
+        <header>
+            <h1><span class="logo-icon">KC</span> KC Stylus Tester</h1>
+            <div style="display: flex; align-items: center; gap: 1rem">
+                <span class="header-badge" id="pointer-support-badge">
+                    <span class="status-dot" id="support-dot"></span>
+                    PointerEvents Supported
+                </span>
+            </div>
+        </header>
+
+        <main>
+            <div class="panel-left">
+                <!-- 1. Verdict Box -->
+                <div
+                    class="card verdict-card state-neutral"
+                    id="verdict-container"
+                >
+                    <div class="verdict-status">
+                        <div class="verdict-icon" id="verdict-icon">❓</div>
+                        <div class="verdict-info">
+                            <span class="verdict-badge" id="verdict-badge"
+                                >รอสัมผัส</span
+                            >
+                            <div class="verdict-name" id="verdict-name">
+                                รอการทดสอบสัญญาณ
+                            </div>
+                            <div class="verdict-desc" id="verdict-desc">
+                                กรุณาใช้สไตลัสหรือนิ้วสัมผัสและขีดเขียนบนกระดานด้านขวาเพื่อเริ่มวิเคราะห์ความเข้ากันได้กับแอป
+                                Kumon
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Real-time Diagnostics -->
+                <div class="card">
+                    <h2 class="card-title">🔍 รายละเอียดพารามิเตอร์</h2>
+                    <div class="diag-grid">
+                        <div class="diag-item">
+                            <div class="diag-label">
+                                <span>ประเภท Pointer</span>
+                            </div>
+                            <div
+                                class="diag-value highlight"
+                                id="val-pointer-type"
+                            >
+                                -
+                            </div>
+                        </div>
+
+                        <div class="diag-item">
+                            <div class="diag-label">
+                                <span>ความเร็วอินพุต (Hz)</span>
+                            </div>
+                            <div class="diag-value" id="val-hz">0</div>
+                        </div>
+
+                        <div class="diag-item" style="grid-column: span 2">
+                            <div class="diag-label">
+                                <span>ระดับแรงกด (Pressure)</span>
+                                <span
+                                    id="pressure-pct"
+                                    style="
+                                        margin-left: auto;
+                                        color: var(--text-primary);
+                                        font-weight: 600;
+                                    "
+                                    >0.00 (0%)</span
+                                >
+                            </div>
+                            <div class="progress-bar-container">
+                                <div
+                                    class="progress-bar-fill"
+                                    id="pressure-bar"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <div class="diag-item">
+                            <div class="diag-label">
+                                <span>ช่วงแรงกดสะสม</span>
+                            </div>
+                            <div
+                                class="diag-value"
+                                id="val-pressure-range"
+                                style="font-size: 0.95rem"
+                            >
+                                -
+                            </div>
+                        </div>
+
+                        <div class="diag-item">
+                            <div class="diag-label">
+                                <span>ปุ่มที่ถูกกด</span>
+                            </div>
+                            <div
+                                class="diag-value"
+                                id="val-buttons"
+                                style="font-size: 0.95rem"
+                            >
+                                -
+                            </div>
+                        </div>
+
+                        <div class="diag-item" style="grid-column: span 2">
+                            <div class="diag-label">
+                                <span
+                                    >การตรวจจับทิศทางการเอียงปากกา (Tilt
+                                    Visualizer)</span
+                                >
+                            </div>
+                            <div
+                                class="visualizer-container"
+                                style="margin-top: 0.5rem"
+                            >
+                                <div class="tilt-canvas-wrapper">
+                                    <canvas
+                                        id="tilt-canvas"
+                                        width="80"
+                                        height="80"
+                                        style="
+                                            position: static;
+                                            cursor: default;
+                                            touch-action: auto;
+                                        "
+                                    ></canvas>
+                                </div>
+                                <div
+                                    style="
+                                        font-size: 0.8rem;
+                                        line-height: 1.5;
+                                        color: var(--text-secondary);
+                                    "
+                                >
+                                    <div>
+                                        Tilt X:
+                                        <strong
+                                            id="val-tilt-x"
+                                            style="
+                                                color: var(--text-primary);
+                                                font-family: &quot;JetBrains Mono&quot;;
+                                            "
+                                            >0°</strong
+                                        >
+                                    </div>
+                                    <div>
+                                        Tilt Y:
+                                        <strong
+                                            id="val-tilt-y"
+                                            style="
+                                                color: var(--text-primary);
+                                                font-family: &quot;JetBrains Mono&quot;;
+                                            "
+                                            >0°</strong
+                                        >
+                                    </div>
+                                    <div
+                                        style="
+                                            font-size: 0.75rem;
+                                            margin-top: 0.25rem;
+                                        "
+                                        id="tilt-status"
+                                    >
+                                        มุมเอียงของตัวปากกาเมื่อเทียบกับหน้าจอ
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="diag-item">
+                            <div class="diag-label">
+                                <span>พิกัดสัมผัส (X, Y)</span>
+                            </div>
+                            <div
+                                class="diag-value"
+                                id="val-coords"
+                                style="font-size: 0.95rem"
+                            >
+                                -
+                            </div>
+                        </div>
+
+                        <div class="diag-item">
+                            <div class="diag-label">
+                                <span>ขนาดสัมผัส (W x H)</span>
+                            </div>
+                            <div
+                                class="diag-value"
+                                id="val-contact-size"
+                                style="font-size: 0.95rem"
+                            >
+                                -
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Quick Guidelines -->
+                <div class="card instructions-card">
+                    <h2 class="card-title">💡 วิธีตรวจสอบคุณภาพปากกา</h2>
+                    <ul>
+                        <li>
+                            ลอง<strong>ลงน้ำหนักเบาและกดหนัก</strong>:
+                            หากช่วงระดับแรงกด (Pressure) เปลี่ยนแปลงอย่างละเอียด
+                            แสดงว่าปากการองรับการควบคุมเส้นหนักเบาในโปรแกรมวาดเขียนได้
+                        </li>
+                        <li>
+                            ลอง<strong>เอียงตัวปากกา</strong>:
+                            วงกลมจำลองด้านบนจะขยับตามทิศทางการเอียงของด้ามปากกา
+                            (หากตัวสไตลัสและแท็บเล็ตรองรับเซนเซอร์นี้)
+                        </li>
+                        <li>
+                            เช็ค<strong>ความถี่ (Hz)</strong>:
+                            อุปกรณ์แท็บเล็ตระดับพรีเมียมพร้อมปากกาคุณภาพสูง
+                            (เช่น iPad Pro หรือ Galaxy Tab S) จะมีค่า Hz สูง
+                            (120Hz ขึ้นไป) ทำให้ลากเส้นได้ต่อเนื่องไร้ดีเลย์
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel-right">
+                <!-- Interactive canvas -->
+                <div class="canvas-container" id="canvas-container">
+                    <div class="canvas-overlay">
+                        <span
+                            >ประเภท:
+                            <strong id="overlay-type">รออินพุต</strong></span
+                        >
+                        <span
+                            >พิกัด: <strong id="overlay-coords">-</strong></span
+                        >
+                        <span
+                            >แรงกด:
+                            <strong id="overlay-pressure">-</strong></span
+                        >
+                    </div>
+                    <canvas id="drawing-canvas"></canvas>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="tool-section">
+                        <span class="tool-label">โหมดวาด:</span>
+                        <div class="mode-toggles">
+                            <button
+                                class="mode-btn active"
+                                id="mode-draw"
+                                onclick="setDrawingMode(true)"
+                            >
+                                ✏️ วาดภาพ
+                            </button>
+                            <button
+                                class="mode-btn"
+                                id="mode-erase"
+                                onclick="setDrawingMode(false)"
+                            >
+                                🧼 ยางลบ
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <span class="tool-label">สีปากกา:</span>
+                        <div class="color-picker">
+                            <button
+                                class="color-btn active"
+                                style="background-color: #4f46e5"
+                                onclick="setBrushColor('#4f46e5', this)"
+                            ></button>
+                            <button
+                                class="color-btn"
+                                style="background-color: #0f172a"
+                                onclick="setBrushColor('#0f172a', this)"
+                            ></button>
+                            <button
+                                class="color-btn"
+                                style="background-color: #10b981"
+                                onclick="setBrushColor('#10b981', this)"
+                            ></button>
+                            <button
+                                class="color-btn"
+                                style="background-color: #f59e0b"
+                                onclick="setBrushColor('#f59e0b', this)"
+                            ></button>
+                            <button
+                                class="color-btn"
+                                style="background-color: #ef4444"
+                                onclick="setBrushColor('#ef4444', this)"
+                            ></button>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <span class="tool-label">ขนาด:</span>
+                        <div class="slider-container">
+                            <input
+                                type="range"
+                                class="brush-slider"
+                                id="brush-size"
+                                min="1"
+                                max="40"
+                                value="8"
+                                oninput="updateBrushSize(this.value)"
+                            />
+                            <span class="size-val" id="size-val">8px</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-section" style="margin-left: auto">
+                        <button
+                            class="btn btn-secondary"
+                            onclick="clearCanvas()"
+                            style="padding: 0.5rem 1rem"
+                        >
+                            🧹 ล้างหน้าจอ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            // Verify Pointer Event support in browser
+            window.addEventListener("DOMContentLoaded", () => {
+                const dot = document.getElementById("support-dot");
+                const badge = document.getElementById("pointer-support-badge");
+                if (!window.PointerEvent) {
+                    dot.className = "status-dot red";
+                    badge.style.color = "#ef4444";
+                    badge.style.background = "rgba(239, 68, 68, 0.08)";
+                    badge.style.border = "1px solid rgba(239, 68, 68, 0.15)";
+                    badge.innerHTML =
+                        '<span class="status-dot red"></span> PointerEvents NOT Supported';
+                }
+                initCanvas();
+                initTiltCanvas();
+            });
+
+            // Drawing Canvas Variables & Logic
+            const canvas = document.getElementById("drawing-canvas");
+            const ctx = canvas.getContext("2d");
+
+            let isDrawing = false;
+            let isEraserMode = false;
+            let currentColor = "#4f46e5";
+            let brushSize = 8;
+            let lastX = 0;
+            let lastY = 0;
+
+            // Pointer statistics tracking
+            let minPressure = 1.0;
+            let maxPressure = 0.0;
+            let moveTimestamps = [];
+
+            // Canvas resizing
+            function resizeCanvas() {
+                // Create a temporary canvas to save current image data
+                const tempCanvas = document.createElement("canvas");
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext("2d");
+                tempCtx.drawImage(canvas, 0, 0);
+
+                // Resize main canvas
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+
+                // Draw saved image back
+                ctx.drawImage(tempCanvas, 0, 0);
+            }
+
+            function initCanvas() {
+                resizeCanvas();
+                window.addEventListener("resize", resizeCanvas);
+
+                // Pointer event listeners
+                canvas.addEventListener("pointerdown", handlePointerDown);
+                canvas.addEventListener("pointermove", handlePointerMove);
+                canvas.addEventListener("pointerup", handlePointerUp);
+                canvas.addEventListener("pointercancel", handlePointerUp);
+                canvas.addEventListener("pointerout", handlePointerUp);
+            }
+
+            function getCanvasPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top,
+                };
+            }
+
+            function handlePointerDown(e) {
+                // Use preventDefault to avoid scrolling/gestures on touchscreen
+                e.preventDefault();
+                isDrawing = true;
+                const pos = getCanvasPos(e);
+                lastX = pos.x;
+                lastY = pos.y;
+
+                // Update data immediately
+                updateDiagnostics(e, "down");
+
+                // Draw initial point
+                ctx.beginPath();
+                const currentWidth = calculateLineWidth(e);
+                ctx.arc(pos.x, pos.y, currentWidth / 2, 0, Math.PI * 2);
+                ctx.fillStyle = isEraserMode ? "#ffffff" : currentColor;
+                ctx.fill();
+            }
+
+            function handlePointerMove(e) {
+                e.preventDefault();
+                updateDiagnostics(e, "move");
+
+                if (!isDrawing) return;
+
+                const pos = getCanvasPos(e);
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(pos.x, pos.y);
+
+                ctx.lineWidth = calculateLineWidth(e);
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                ctx.strokeStyle = isEraserMode ? "#ffffff" : currentColor;
+                ctx.stroke();
+
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function handlePointerUp(e) {
+                isDrawing = false;
+                updateDiagnostics(e, "up");
+            }
+
+            function calculateLineWidth(e) {
+                // Only scale width with pressure if pointerType is 'pen' and pressure > 0
+                if (e.pointerType === "pen" && e.pressure > 0) {
+                    // Base brush size scales up to 1.8x depending on pressure
+                    return brushSize * (0.2 + e.pressure * 1.6);
+                }
+                return brushSize;
+            }
+
+            // Brush controls
+            function setDrawingMode(draw) {
+                isEraserMode = !draw;
+                document
+                    .getElementById("mode-draw")
+                    .classList.toggle("active", draw);
+                document
+                    .getElementById("mode-erase")
+                    .classList.toggle("active", !draw);
+            }
+
+            function setBrushColor(color, btnElement) {
+                currentColor = color;
+                document
+                    .querySelectorAll(".color-btn")
+                    .forEach((btn) => btn.classList.remove("active"));
+                btnElement.classList.add("active");
+                setDrawingMode(true); // Switch back to drawing when changing colors
+            }
+
+            // Slider change
+            function updateBrushSize(val) {
+                brushSize = parseFloat(val);
+                document.getElementById("size-val").textContent = val + "px";
+            }
+
+            function clearCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                minPressure = 1.0;
+                maxPressure = 0.0;
+                moveTimestamps = [];
+                document.getElementById("val-pressure-range").textContent = "-";
+                document.getElementById("val-hz").textContent = "0";
+            }
+
+            // Live Diagnostics & Verdict System
+            function updateDiagnostics(e, actionType = "move") {
+                // 1. Raw values
+                const pointerType = e.pointerType || "N/A";
+                const pressure = e.pressure !== undefined ? e.pressure : 0.5;
+                const tiltX = e.tiltX !== undefined ? e.tiltX : 0;
+                const tiltY = e.tiltY !== undefined ? e.tiltY : 0;
+                const buttons = e.buttons !== undefined ? e.buttons : 0;
+                const width = e.width !== undefined ? Math.round(e.width) : 0;
+                const height =
+                    e.height !== undefined ? Math.round(e.height) : 0;
+                const pos = getCanvasPos(e);
+                const coordsText = `${Math.round(pos.x)}, ${Math.round(pos.y)}`;
+
+                // Update UI elements
+                document.getElementById("val-pointer-type").textContent =
+                    pointerType;
+                document.getElementById("val-coords").textContent = coordsText;
+                document.getElementById("val-contact-size").textContent =
+                    `${width} × ${height}`;
+                document.getElementById("val-tilt-x").textContent = `${tiltX}°`;
+                document.getElementById("val-tilt-y").textContent = `${tiltY}°`;
+
+                // Overlay updates
+                document.getElementById("overlay-type").textContent =
+                    pointerType;
+                document.getElementById("overlay-coords").textContent =
+                    coordsText;
+
+                // Handle Buttons text description
+                let buttonsDesc = "None";
+                if (buttons === 1) buttonsDesc = "Primary (Tip)";
+                else if (buttons === 2) buttonsDesc = "Secondary (Barrel)";
+                else if (buttons === 32) buttonsDesc = "Eraser";
+                else if (buttons > 0) buttonsDesc = `Code: ${buttons}`;
+                document.getElementById("val-buttons").textContent =
+                    buttonsDesc;
+
+                // Calculate Hz (Sampling Frequency) on move events
+                if (actionType === "move") {
+                    const now = performance.now();
+                    moveTimestamps.push(now);
+                    if (moveTimestamps.length > 30) moveTimestamps.shift();
+
+                    if (moveTimestamps.length > 1) {
+                        const duration =
+                            moveTimestamps[moveTimestamps.length - 1] -
+                            moveTimestamps[0];
+                        const count = moveTimestamps.length - 1;
+                        const avgInterval = duration / count; // ms
+                        const hz = Math.round(1000 / avgInterval);
+                        document.getElementById("val-hz").textContent =
+                            isDrawing ? hz : "0";
+                    }
+                }
+
+                // Handle Pressure visualization and ranges
+                let displayPressure = pressure;
+                const hasPressureSensor =
+                    pointerType === "pen" && pressure > 0 && pressure !== 0.5;
+
+                if (isDrawing && pressure > 0) {
+                    if (pressure < minPressure) minPressure = pressure;
+                    if (pressure > maxPressure) maxPressure = pressure;
+
+                    document.getElementById("val-pressure-range").textContent =
+                        `${minPressure.toFixed(3)} - ${maxPressure.toFixed(3)}`;
+                }
+
+                const pressurePercent = Math.round(displayPressure * 100);
+                document.getElementById("pressure-pct").textContent =
+                    `${displayPressure.toFixed(3)} (${pressurePercent}%)`;
+                document.getElementById("pressure-bar").style.width =
+                    `${pressurePercent}%`;
+                document.getElementById("overlay-pressure").textContent =
+                    displayPressure.toFixed(2);
+
+                // 2. Verdict Evaluation
+                evaluateVerdict(
+                    pointerType,
+                    hasPressureSensor || maxPressure - minPressure > 0.05,
+                );
+
+                // 3. Update Tilt Visualizer
+                drawTiltVisualizer(tiltX, tiltY, pressure);
+            }
+
+            function evaluateVerdict(type, supportsPressure) {
+                const container = document.getElementById("verdict-container");
+                const icon = document.getElementById("verdict-icon");
+                const badge = document.getElementById("verdict-badge");
+                const name = document.getElementById("verdict-name");
+                const desc = document.getElementById("verdict-desc");
+
+                // Reset classes
+                container.className = "card verdict-card";
+
+                if (type === "pen") {
+                    container.classList.add("state-success");
+                    icon.textContent = "🟢";
+                    badge.textContent = "Native Stylus";
+                    name.textContent = "เข้ากันได้แบบสมบูรณ์ (Native)";
+                    desc.innerHTML = `เบราว์เซอร์รับอินพุตเป็น <strong>Active Pen</strong> โดยตรง ปากกาชิ้นนี้จะสามารถเขียน วาดภาพ หรือทำใบงานบนแอป Kumon ดั้งเดิมได้ทันทีโดยไม่มีปัญหาและไม่ต้องลงสคริปต์เพิ่มเติม ${supportsPressure ? "<br>⚡ <i>ตรวจพบแรงกดหนักเบาได้ปกติ (Pressure Sensitive)</i>" : ""}`;
+                } else if (type === "touch") {
+                    container.classList.add("state-warning");
+                    icon.textContent = "🟡";
+                    badge.textContent = "Capacitive/Touch";
+                    name.textContent = "รองรับผ่านตัวช่วย (ต้องลงสคริปต์)";
+                    desc.innerHTML = `ตรวจพบอินพุตสัมผัสแบบ <strong>Touch</strong> ปากกานี้เป็นชนิดสัมผัสธรรมดา (เหมือนนิ้วมือ) โปรแกรม Kumon จะบล็อกไม่ให้วาดเขียนโดยปกติ คุณจำเป็นต้องติดตั้งผู้ช่วย <strong>Kumon Finger Enabler userscript</strong> เพื่อแปลงสัญญาณนิ้วมือเป็นปากกาจึงจะใช้เขียนได้`;
+                } else if (type === "mouse") {
+                    container.classList.add("state-neutral");
+                    icon.textContent = "🖱️";
+                    badge.textContent = "Mouse input";
+                    name.textContent = "ตรวจพบสัญญาณเมาส์";
+                    desc.textContent = `สัญญาณเป็นเมาส์ทั่วไป โดยปกติแอป Kumon จะใช้เมาส์ในการควบคุมและคลิกเท่านั้น ไม่ได้ใช้สำหรับการกรอกคำตอบด้วยการวาดเขียน`;
+                }
+            }
+
+            // Tilt Visualizer Canvas Logic
+            const tiltCanvas = document.getElementById("tilt-canvas");
+            const tiltCtx = tiltCanvas.getContext("2d");
+
+            function initTiltCanvas() {
+                drawTiltVisualizer(0, 0, 0);
+            }
+
+            function drawTiltVisualizer(tiltX, tiltY, pressure) {
+                const w = tiltCanvas.width;
+                const h = tiltCanvas.height;
+                const cx = w / 2;
+                const cy = h / 2;
+                const r = Math.min(cx, cy) - 6;
+
+                // Clear
+                tiltCtx.clearRect(0, 0, w, h);
+
+                // Draw background target rings
+                tiltCtx.beginPath();
+                tiltCtx.arc(cx, cy, r, 0, Math.PI * 2);
+                tiltCtx.strokeStyle = "rgba(0, 0, 0, 0.08)";
+                tiltCtx.lineWidth = 1.5;
+                tiltCtx.stroke();
+
+                tiltCtx.beginPath();
+                tiltCtx.arc(cx, cy, r / 2, 0, Math.PI * 2);
+                tiltCtx.strokeStyle = "rgba(0, 0, 0, 0.04)";
+                tiltCtx.stroke();
+
+                // Axis lines
+                tiltCtx.beginPath();
+                tiltCtx.moveTo(cx - r, cy);
+                tiltCtx.lineTo(cx + r, cy);
+                tiltCtx.moveTo(cx, cy - r);
+                tiltCtx.lineTo(cx, cy + r);
+                tiltCtx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+                tiltCtx.stroke();
+
+                // Draw Center dot
+                tiltCtx.beginPath();
+                tiltCtx.arc(cx, cy, 3, 0, Math.PI * 2);
+                tiltCtx.fillStyle = "rgba(0, 0, 0, 0.2)";
+                tiltCtx.fill();
+
+                // Calculate tilt position
+                const factorX = tiltX / 90;
+                const factorY = tiltY / 90;
+
+                const targetX = cx + factorX * r;
+                const targetY = cy + factorY * r;
+
+                // Draw angle line to current tilt
+                if (tiltX !== 0 || tiltY !== 0) {
+                    tiltCtx.beginPath();
+                    tiltCtx.moveTo(cx, cy);
+                    tiltCtx.lineTo(targetX, targetY);
+                    tiltCtx.strokeStyle = "#4f46e5";
+                    tiltCtx.lineWidth = 1.5;
+                    tiltCtx.stroke();
+
+                    // Glowing position dot
+                    tiltCtx.beginPath();
+                    const dotR = 4 + pressure * 6;
+                    tiltCtx.arc(targetX, targetY, dotR, 0, Math.PI * 2);
+
+                    tiltCtx.fillStyle = pressure > 0 ? "#059669" : "#4f46e5";
+                    tiltCtx.shadowColor =
+                        pressure > 0
+                            ? "rgba(5, 150, 105, 0.3)"
+                            : "rgba(79, 70, 229, 0.3)";
+                    tiltCtx.shadowBlur = 4;
+                    tiltCtx.fill();
+                    tiltCtx.shadowBlur = 0; // Reset
+                }
+            }
+        </script>
+    </body>
+</html>
